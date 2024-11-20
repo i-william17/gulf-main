@@ -1,6 +1,5 @@
 import React from 'react';
 import backgroundImage from '../assets/3.jpg';
-import './Hero.css';
 import TypingEffect from 'react-typing-effect';
 import { useInView } from 'react-intersection-observer';
 import Particles from 'react-tsparticles';

@@ -1,12 +1,5 @@
 const Patient = require('../models/Patient');
-const cloudinary = require('cloudinary').v2; // Optional: for image uploads to Cloudinary
-
-// Configure Cloudinary (optional)
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const fs = require('fs');
 
 // Fetch all patients
 exports.getAllPatients = async (req, res) => {
@@ -29,15 +22,20 @@ exports.getPatientById = async (req, res) => {
   }
 };
 
+// Helper function to convert image to base64
+const convertImageToBase64 = (filePath) => {
+  const imageBuffer = fs.readFileSync(filePath);
+  return imageBuffer.toString('base64');
+};
+
 // Create a new patient
 exports.createPatient = async (req, res) => {
   const { name, passportNumber, issuingCountry, occupation, sex, height, weight, age, medicalType } = req.body;
-  let photoUrl = '';
+  let photoBase64 = '';
 
-  // Optional: Upload image to Cloudinary
+  // Convert image to base64 and store it in the database
   if (req.file) {
-    const result = await cloudinary.uploader.upload(req.file.path);
-    photoUrl = result.secure_url;
+    photoBase64 = convertImageToBase64(req.file.path);
   }
 
   const patient = new Patient({
@@ -49,7 +47,7 @@ exports.createPatient = async (req, res) => {
     height,
     weight,
     age,
-    photo: photoUrl,
+    photo: photoBase64, // Storing the photo as a base64 string
     medicalType,
   });
 

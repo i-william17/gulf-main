@@ -10,7 +10,7 @@ const Footer = () => {
         <div>
           <div className="text-4xl font-extrabold mb-4">
             <Link to="/" className="hover:text-gray-200 transition duration-300">
-              Gulf Health Centre Limited Limited
+              Gulf Health Centre Limited
             </Link>
           </div>
           <p className="text-gray-300 mb-6 leading-relaxed">

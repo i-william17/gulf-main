@@ -40,35 +40,34 @@ const registerUser = async (req, res) => {
 
 // Login a user
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-  
-    try {
-      const user = await User.findOne({ email });
-      console.log('User found:', user); // Log found user
-  
-      if (!user) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-  
-      const isMatch = await user.matchPassword(password);
-      console.log('Password match:', isMatch); // Log password match result
-  
-      if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-  
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
-      });
-    } catch (error) {
-      console.error(error); // Log any error
-      res.status(500).json({ message: 'Server error' });
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    console.log('User found:', user); // Log found user
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
-  };
-  
+
+    const isMatch = await user.matchPassword(password);
+    console.log('Password match:', isMatch); // Log password match result
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
+  } catch (error) {
+    console.error(error); // Log any error
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 // Get user profile (protected)
 const getUserProfile = async (req, res) => {
@@ -90,4 +89,15 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile };
+// Get all users (admin)
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password'); // Exclude password from the results
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserProfile, getAllUsers };

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const labRoutes = require('./routes/labRoutes')
 const patientRoutes = require('./routes/patientRoutes');
 const userRoutes = require('./routes/userRoutes');
 require('dotenv').config();
@@ -30,6 +31,7 @@ mongoose.connect(process.env.MONGO)
   });
 
 // Import routes
+app.use('/api/lab', labRoutes)
 app.use('/api/patient', patientRoutes);
 app.use('/api/user', userRoutes);
 

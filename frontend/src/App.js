@@ -8,9 +8,15 @@ import Accounts from './pages/Accounts/Accounts.jsx'
 import Home from "../src/pages/Home/Home.jsx";
 import Phlebotomy from './pages/Phlebotomy/Phlebotomy.jsx';
 import Lab from './pages/Lab/Lab.jsx'
+import Admin from './pages/Admin/Admin.jsx'
 import AccountsLogin from './pages/Accounts/AccountsLogin.jsx'
 import { PatientProvider } from './context/patientContext.jsx';
 import 'react-toastify/dist/ReactToastify.css';
+import AllPatients from './pages/Admin/AllPatients.jsx';
+import UserAccount from './pages/Admin/UserAccount.jsx';
+import FinancialStatements from './pages/Admin/FinancialStatement.jsx';
+import AllUsers from './pages/Admin/AllUsers.jsx';
+import Clinical from './pages/Clinical/Clinical.jsx';
 
 const App = () => {
 
@@ -26,6 +32,12 @@ const App = () => {
         <Route path='/accounts-login' element={<AccountsLogin/>}/>
         <Route path='/phlebotomy' element={<Phlebotomy/>}/>
         <Route path='/lab' element={<Lab/>}/>
+        <Route path='/clinical' element={<Clinical/>}/>
+        <Route path='/admin' element={<Admin/>}/>
+        <Route path='/all-patients' element={<AllPatients/>}/>
+        <Route path='/user-account' element={<UserAccount/>}/>
+        <Route path='/financial-statements' element={<FinancialStatements/>}/>
+        <Route path='/all-users' element={<AllUsers/>}/>
 
         {/* Add more routes as needed */}
       </Routes>

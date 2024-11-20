@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactToPrint from 'react-to-print'; // Import ReactToPrint
-import {
+import {Dialog, DialogActions, DialogContent, DialogTitle,
   TextField,
   Button,
   MenuItem,
@@ -21,6 +21,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
+import TopBar from '../../components/TopBar'
+import LeftBar from '../../components/LeftBar'
+import Footer from '../../components/Footer';
 import { QRCodeCanvas } from 'qrcode.react';
 import logo from '../../assets/GULF HEALTHCARE KENYA LTD.png'
 
@@ -28,6 +31,8 @@ const medicalTypes = ['MAURITIUS', 'SM-VDRL', 'MEDICAL', 'FM', 'NORMAL'];
 
 const FrontOffice = () => {
   const [patient, setPatient] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [patients, setPatients] = useState([]);
   const [loadingPatients, setLoadingPatients] = useState(true);
@@ -42,7 +47,7 @@ const FrontOffice = () => {
     height: '',
     weight: '',
     age: '',
-    photo: '',
+    photo: null,
     medicalType: '',
   });
 
@@ -67,7 +72,6 @@ const FrontOffice = () => {
         setLoading(false);
       }
     };
-
     const fetchAllPatients = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/patient');
@@ -92,17 +96,52 @@ const FrontOffice = () => {
     });
   };
 
-  const captureImage = () => {
-    return webcamRef.current.getScreenshot();
+  const handleDialogOpen = (patientId) => {
+    setSelectedPatientId(patientId);
+    setOpenDialog(true);
   };
 
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    setSelectedPatientId(null);
+  };
+
+  const captureImage = () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    if (imageSrc) {
+      fetch(imageSrc)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+          setFormValues({ ...formValues, photo: file });
+          toast.success("Image captured successfully.");
+          setShowWebcam(false);
+        })
+        .catch((error) => {
+          console.error('Error capturing image:', error);
+          toast.error('Failed to capture webcam image.');
+        });
+    }
+  };
+
+  const removeCapturedPhoto = () => {
+    setFormValues({ ...formValues, photo: null });
+  };
+  
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0]; // Get the uploaded file
+    if (file) {
+      setFormValues({ ...formValues, photo: file }); // Save the file as a File object
+    }
+  };
+  
   const renderPhotoInput = () => (
     <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
       <label>Upload Photo: </label>
       <input
         type="file"
         accept="image/*"
-        onChange={(e) => setFormValues({ ...formValues, photo: URL.createObjectURL(e.target.files[0]) })}
+        onChange={handleFileUpload}
         style={{ marginBottom: '10px' }}
       />
       <Button variant="outlined" color="primary" onClick={() => setShowWebcam(!showWebcam)}>
@@ -116,9 +155,34 @@ const FrontOffice = () => {
           </Button>
         </div>
       )}
+     
+      
       {formValues.photo && (
-        <img src={formValues.photo} alt="Patient" style={{ width: '100px', height: 'auto', marginTop: '10px' }} />
+      <div style={{ marginTop: '10px' }}>
+         <img
+           src={formValues.photo instanceof File ? URL.createObjectURL(formValues.photo) : formValues.photo}
+           alt="Captured"
+           style={{ width: '100px', height: 'auto' }}
+       />
+       <button
+           type="button"
+           onClick={removeCapturedPhoto}
+           style={{
+             marginTop: '10px',
+             padding: '5px 10px',
+             backgroundColor: '#ff4d4d',
+             color: '#fff',
+             border: 'none',
+             borderRadius: '5px',
+             cursor: 'pointer'
+      }}
+       >
+      Remove Photo
+      </button>
+      </div>
       )}
+
+
     </div>
   );
 
@@ -233,7 +297,7 @@ const FrontOffice = () => {
       height: '',
       weight: '',
       age: '',
-      photo: '',
+      photo: null,
       medicalType: '',
     });
     setShowWebcam(false); // Reset webcam state
@@ -241,27 +305,27 @@ const FrontOffice = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Validation checks
-    const requiredFields = ['name', 'age', 'sex', 'passportNumber', 'medicalType'];
+    const requiredFields = ['name', 'age', 'sex', 'passportNumber', 'medicalType' ];
     for (const field of requiredFields) {
       if (!formValues[field]) {
         toast.error(`${field} is required.`);
         return; // Prevent form submission if a required field is missing
       }
     }
-
+  
     // FormData for file uploads
     const formData = new FormData();
-    for (const key in formValues) {
-      formData.append(key, formValues[key]);
-    }
-
+    Object.keys(formValues).forEach((key) => {
+        formData.append(key, formValues[key]);
+    });
+  
     try {
       await axios.post('http://localhost:5000/api/patient', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
+  
       toast.success('Form submitted successfully');
       resetForm(); // Reset form after successful submission
     } catch (error) {
@@ -270,7 +334,58 @@ const FrontOffice = () => {
     }
   };
 
-  const handlePrint = useRef(null); // Create ref for ReactToPrint
+  const updatePatient = async () => {
+    if (!formValues._id) {
+      toast.error('No patient selected for update.');
+      return;
+    }
+  
+    // Validation checks before updating
+    const requiredFields = ['name', 'age', 'sex', 'passportNumber', 'medicalType'];
+    for (const field of requiredFields) {
+      if (!formValues[field]) {
+        toast.error(`${field} is required.`);
+        return;
+      }
+    }
+  
+    // FormData for file uploads if necessary
+    const formData = new FormData();
+    for (const key in formValues) {
+      formData.append(key, formValues[key]);
+    }
+  
+    try {
+      await axios.put(`http://localhost:5000/api/patient/${formValues._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      toast.success('Patient updated successfully');
+      resetForm(); // Clear the form after successful update
+    } catch (error) {
+      console.error('Error updating patient:', error.response?.data || error.message);
+      toast.error('Failed to update the patient: ' + (error.response?.data?.message || error.message));
+    }
+  };
+  
+  const deletePatient = async (patientId) => {
+    if (!selectedPatientId) {
+      toast.error('No patient selected for deletion.');
+      return;
+    }
+  
+    try {
+      await axios.delete(`http://localhost:5000/api/patient/${selectedPatientId}`);
+      toast.success('Patient deleted successfully');
+      setPatients(patients.filter((p) => p._id !== selectedPatientId)); // Update the patient list
+      handleDialogClose();
+    } catch (error) {
+      console.error('Error deleting patient:', error.response?.data || error.message);
+      toast.error('Failed to delete the patient: ' + (error.response?.data?.message || error.message));
+    }
+  };
+  
+  
+  const handlePrint = useRef(null);
 
   if (loading || loadingPatients) {
     return (
@@ -288,6 +403,11 @@ const FrontOffice = () => {
   }));
 
   return (
+    <>
+    <TopBar/>
+    <div className='flex'>
+    <LeftBar/>
+
     <Container maxWidth="lg" sx={{ marginTop: 2, marginBottom: 4, padding: 2, boxShadow: 3, borderRadius: 2 }}>
       <Typography variant="h5" align="center" gutterBottom>
         Patient Registration Form
@@ -316,6 +436,22 @@ const FrontOffice = () => {
       <Typography variant="h5" align="center" gutterBottom style={{ marginTop: '20px' }}>
         Patients List
       </Typography>
+
+       {/* Confirmation Dialog */}
+       <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this patient? This action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={deletePatient} className='bg-red-500' variant="contained">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <ReactToPrint
         trigger={() => 
@@ -378,7 +514,15 @@ const FrontOffice = () => {
             {patients.map((p) => (
               <TableRow key={p._id}>
                 <TableCell>
-                  {p.photo ? <img src={p.photo} alt="Patient" style={{ width: '50px', height: 'auto' }} /> : '-'}
+                  {p.photo ? (
+                    <img
+                    src={`data:image/jpeg;base64,${p.photo}` || `${p.photo}`}
+                    alt="Patient"
+                    style={{ width: '60px', height: 'auto' }}
+                />
+                ) : (
+                '-'
+                )}
                 </TableCell>
                 <TableCell>{p.name}</TableCell>
                 <TableCell>{p.age}</TableCell>
@@ -389,12 +533,13 @@ const FrontOffice = () => {
                 <TableCell>{p.height || '-'}</TableCell>
                 <TableCell>{p.weight || '-'}</TableCell>
                 <TableCell>{p.medicalType}</TableCell>
+                <TableCell><Button variant="contained" className='bg-red-500' onClick={()=>handleDialogOpen(p._id)} >Delete</Button></TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
         <footer className="mt-4 text-center">
-          <QRCodeCanvas value='' size={128} />
+          <div align="center"><QRCodeCanvas value='' size={128} /></div>
           <p>Thank you for choosing our health center!</p>
         </footer>
       </TableContainer>
@@ -414,6 +559,10 @@ const FrontOffice = () => {
 
       <ToastContainer />
     </Container>
+
+    </div>
+    <Footer/>
+    </>
   );
 };
 

@@ -81,7 +81,7 @@ const Navbar = () => {
               <Link to="/login" className="block w-full text-left px-4 py-2 hover:bg-teal-700 transition duration-300">Front Office</Link>
               <Link to="/accounts-login" className="block w-full text-left px-4 py-2 hover:bg-teal-700 transition duration-300">Accounts</Link>
               <Link to="/phlebotomy" className="block w-full text-left px-4 py-2 hover:bg-teal-700 transition duration-300">Phlebotomy</Link>
-              <Link to="/laboratory" className="block w-full text-left px-4 py-2 hover:bg-teal-700 transition duration-300">Laboratory</Link>
+              <Link to="/lab" className="block w-full text-left px-4 py-2 hover:bg-teal-700 transition duration-300">Laboratory</Link>
               <Link to="/clinical" className="block w-full text-left px-4 py-2 hover:bg-teal-700 transition duration-300">Clinical</Link>
             </div>
           </div>
@@ -180,7 +180,7 @@ const Navbar = () => {
                 <Link to="/login" className="block text-white text-lg px-4 py-2 hover:bg-teal-700 transition duration-300">Front Office</Link>
                 <Link to="/accounts-login" className="block text-white text-lg px-4 py-2 hover:bg-teal-700 transition duration-300">Accounts</Link>
                 <Link to="/phlebotomy" className="block text-white text-lg px-4 py-2 hover:bg-teal-700 transition duration-300">Phlebotomy</Link>
-                <Link to="/laboratory" className="block text-white text-lg px-4 py-2 hover:bg-teal-700 transition duration-300">Laboratory</Link>
+                <Link to="/lab" className="block text-white text-lg px-4 py-2 hover:bg-teal-700 transition duration-300">Laboratory</Link>
                 <Link to="/clinical" className="block text-white text-lg px-4 py-2 hover:bg-teal-700 transition duration-300">Clinical</Link>
               </div>
             </div>

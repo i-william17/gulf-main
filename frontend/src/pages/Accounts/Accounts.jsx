@@ -5,14 +5,17 @@ import axios from 'axios';
 import ReactToPrint from 'react-to-print';
 import { QRCodeCanvas } from 'qrcode.react';
 import 'react-toastify/dist/ReactToastify.css';
-import logo from '../../assets/GULF HEALTHCARE KENYA LTD.png'
+import TopBar from '../../components/TopBar';
+import logo from '../../assets/GULF HEALTHCARE KENYA LTD.png';
+import LeftBar from '../../components/LeftBar';
+import Footer from '../../components/Footer'
 
 const Accounts = () => {
   const { patientData, updatePatientData } = usePatient();
   const [amountDue, setAmountDue] = useState('');
   const [amountPaid, setAmountPaid] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [paymentRecords, setPaymentRecords] = useState([]);
   const [currentRecord, setCurrentRecord] = useState(null);
   const componentRef = useRef();
@@ -21,6 +24,7 @@ const Accounts = () => {
     const fetchPaymentRecords = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/patient/account/id');
+        console.log('Payment records:', response.data);
         setPaymentRecords(response.data);
       } catch (error) {
         console.error('Error fetching payment records:', error);
@@ -80,11 +84,21 @@ const Accounts = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!id) {
+      console.error('ID is undefined. Cannot proceed with deletion.');
+      toast.error('ID is undefined. Cannot proceed with deletion.');
+      return;
+    }
+
+    const confirmDelete = window.confirm('Are you sure you want to delete this payment record?');
+    if (!confirmDelete) return; // Prevent accidental deletion
+  
     try {
       await axios.delete(`http://localhost:5000/api/patient/account/${id}`);
-      setPaymentRecords(paymentRecords.filter(record => record.id !== id));
+      setPaymentRecords(paymentRecords.filter((record) => record.id !== id));
       toast.success('Payment record deleted successfully.');
     } catch (error) {
+      console.error('Error deleting payment record:', error);
       toast.error('Error deleting payment record. Please try again.');
     }
   };
@@ -101,7 +115,12 @@ const Accounts = () => {
       toast.error('Please enter Amount Due, Amount Paid, and Account Number.');
       return;
     }
-
+  
+    if (parseFloat(amountDue) < 0 || parseFloat(amountPaid) < 0) {
+      toast.error('Amounts cannot be negative.');
+      return;
+    }
+  
     const updatedPayment = {
       ...currentRecord,
       amountDue: parseFloat(amountDue),
@@ -109,17 +128,20 @@ const Accounts = () => {
       accountNumber: accountNumber,
       paymentStatus: parseFloat(amountPaid) >= parseFloat(amountDue) ? 'Paid' : 'Pending',
     };
-
+  
     try {
-      await axios.put(`http://localhost:5000/api/patient/account/${currentRecord.id}`, updatedPayment);
-      setPaymentRecords(paymentRecords.map(record => (record.id === currentRecord.id ? updatedPayment : record)));
+      await axios.put(`http://localhost:5000/api/patient/account/${currentRecord._id}`, updatedPayment);
+      setPaymentRecords(paymentRecords.map(record => 
+        record._id === currentRecord._id ? updatedPayment : record
+      ));
       toast.success('Payment record updated successfully.');
-      resetForm();
+      resetForm(); // Reset the form after update
     } catch (error) {
+      console.error('Error updating payment record:', error);
       toast.error('Error updating payment record. Please try again.');
     }
   };
-
+  
   const resetForm = () => {
     setAmountDue('');
     setAmountPaid('');
@@ -128,6 +150,11 @@ const Accounts = () => {
   };
 
   return (
+    <>
+    <TopBar/>
+    <div className='flex'>
+      <LeftBar/>
+
     <div className="max-w-7xl mx-auto bg-gray-50 p-8 shadow-lg rounded-lg">
       <ToastContainer />
       <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Accounts Office</h1>
@@ -261,7 +288,7 @@ const Accounts = () => {
                     </thead>
                     <tbody>
                       {paymentRecords.map((record) => (
-                        <tr key={record.id}>
+                        <tr key={record._id}>
                           <td className="border">{record.patientName}</td>
                           <td className="border">{record.amountDue}</td>
                           <td className="border">{record.amountPaid}</td>
@@ -276,7 +303,7 @@ const Accounts = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDelete(record.id)}
+                              onClick={() => handleDelete(record._id)}
                               className="bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600 transition"
                             >
                               Delete
@@ -301,6 +328,10 @@ const Accounts = () => {
         <p className="text-gray-700">No patient data available.</p>
       )}
     </div>
+
+    </div>
+    <Footer/>
+    </>
   );
 };
 
