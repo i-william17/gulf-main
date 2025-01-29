@@ -16,15 +16,6 @@ const Agent = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [testTypeFilter, setTestTypeFilter] = useState("All");
     const [dateRange, setDateRange] = useState({ start: "", end: "" });
-    const [clinicalNotes, setClinicalNotes] = useState("");
-    const [clinicalOfficerName, setClinicalOfficerName] = useState("");
-    const [height, setHeight] = useState("");
-    const [weight, setWeight] = useState("");
-    const [historyOfPastIllness, setHistoryOfPastIllness] = useState("");
-    const [allergy, setAllergy] = useState("");
-    const [selectedUnits, setSelectedUnits] = useState({});
-    const [selectedTests, setSelectedTests] = useState({});
-    const [selectAll, setSelectAll] = useState({});
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -84,23 +75,49 @@ const Agent = () => {
             return;
         }
 
+        // Create a more comprehensive dataset for export
         const exportData = [{
-            id: selectedReport._id,
-            patientName: selectedReport.patientName,
-            labNumber: selectedReport.labNumber,
-            clinicalRemarks: selectedReport.clinicalRemarks,
-            date: new Date(selectedReport.timestamp).toLocaleString(),
-            clinicalNotes: selectedReport.clinicalNotes,
-            clinicalOfficerName: selectedReport.clinicalOfficerName,
-            historyOfPastIllness: selectedReport.historyOfPastIllness,
-            allergy: selectedReport.allergy
+            'Patient Name': selectedReport.patientName || 'N/A',
+            'Lab Number': selectedReport.labNumber || 'N/A',
+            'Date': new Date(selectedReport.timestamp).toLocaleString(),
+            'Height (cm)': selectedReport.height || 'N/A',
+            'Weight (kg)': selectedReport.weight || 'N/A',
+            'Clinical Officer': selectedReport.clinicalOfficerName || 'N/A',
+            'Clinical Notes': selectedReport.clinicalNotes || 'N/A',
+            'History of Past Illness': selectedReport.historyOfPastIllness || 'N/A',
+            'Allergies': selectedReport.allergy || 'N/A',
+            'General Examination': selectedReport.generalExamination || 'N/A',
+            'Systemic Examination': selectedReport.systemicExamination || 'N/A',
+            'Blood Test Results': selectedReport.bloodTest || 'N/A',
+            'Urine Test Results': selectedReport.urineTest || 'N/A',
+            'Other Tests': selectedReport.otherTests || 'N/A',
+            'Lab Remarks': selectedReport.labRemarks || 'N/A',
+            'Renal Function': selectedReport.renalFunction || 'N/A',
+            'Full Haemogram': selectedReport.fullHaemogram || 'N/A',
+            'Liver Function': selectedReport.liverFunction || 'N/A',
+            'Radiology Data': selectedReport.radiologyData || 'N/A'
         }];
 
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "ClinicalReports");
-        XLSX.writeFile(workbook, "ClinicalReports.xlsx");
-        toast.success("Report exported to Excel");
+        // Configure worksheet options for better formatting
+        const ws = XLSX.utils.json_to_sheet(exportData, {
+            header: Object.keys(exportData[0]),
+            skipHeader: false
+        });
+
+        // Set column widths
+        const colWidths = Object.keys(exportData[0]).map(() => ({ wch: 30 }));
+        ws['!cols'] = colWidths;
+
+        // Create workbook and append worksheet
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Clinical Report");
+
+        // Generate filename with patient name and date
+        const filename = `Clinical_Report_${selectedReport.patientName}_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+        // Write file and download
+        XLSX.writeFile(wb, filename);
+        toast.success("Report exported successfully");
     };
 
     const printReport = () => {
@@ -109,37 +126,356 @@ const Agent = () => {
             return;
         }
 
+        const printStyles = `
+            <style>
+                @media print {
+                    @page { 
+                        margin: 2cm;
+                        size: A4;
+                    }
+                    body {
+                        font-family: 'Arial', sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                    }
+                    .report-container {
+                        max-width: 100%;
+                        margin: 0 auto;
+                    }
+                    .header {
+                        text-align: center;
+                        padding-bottom: 20px;
+                        border-bottom: 2px solid #2dd4bf;
+                        margin-bottom: 30px;
+                    }
+                    .report-title {
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #0f766e;
+                        margin: 10px 0;
+                    }
+                    .section {
+                        margin-bottom: 25px;
+                        page-break-inside: avoid;
+                    }
+                    .section-title {
+                        font-size: 18px;
+                        font-weight: bold;
+                        color: #0f766e;
+                        margin-bottom: 10px;
+                        padding-bottom: 5px;
+                        border-bottom: 1px solid #e2e8f0;
+                    }
+                    .subsection-title {
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: #1f2937;
+                        margin: 15px 0 10px 0;
+                    }
+                    .section-content {
+                        background-color: #f8fafc;
+                        padding: 15px;
+                        border-radius: 8px;
+                        margin-bottom: 15px;
+                    }
+                    .data-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 15px;
+                        margin-bottom: 15px;
+                    }
+                    .data-item {
+                        padding: 10px;
+                        background-color: white;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 4px;
+                    }
+                    .test-result {
+                        display: grid;
+                        grid-template-columns: 2fr 1fr 1fr 1fr;
+                        gap: 10px;
+                        padding: 8px;
+                        border-bottom: 1px solid #e2e8f0;
+                    }
+                    .test-result:last-child {
+                        border-bottom: none;
+                    }
+                    .test-header {
+                        font-weight: bold;
+                        background-color: #f1f5f9;
+                        padding: 8px;
+                    }
+                    .label {
+                        font-weight: bold;
+                        color: #1f2937;
+                    }
+                    .value {
+                        color: #4b5563;
+                    }
+                    .footer {
+                        margin-top: 40px;
+                        padding-top: 20px;
+                        border-top: 2px solid #2dd4bf;
+                        text-align: center;
+                        font-size: 12px;
+                        color: #64748b;
+                    }
+                }
+            </style>
+        `;
+
+        const formatData = (data) => {
+            return data || 'Not Available';
+        };
+
+        const renderTestResult = (test) => {
+            if (!test) return '';
+            const { value, units, status, range } = test;
+            return `
+                <div class="test-result">
+                    <span class="value">${formatData(value)}</span>
+                    <span class="value">${formatData(units)}</span>
+                    <span class="value">${formatData(status)}</span>
+                    <span class="value">${formatData(range)}</span>
+                </div>
+            `;
+        };
+
         const printContent = `
             <html>
                 <head>
-                    <title>Clinical Report</title>
+                    <title>Clinical Report - ${formatData(selectedReport.selectedReport.patientName)}</title>
+                    ${printStyles}
                 </head>
                 <body>
-                    <h1>${selectedReport.patientName}'s Clinical Report</h1>
-                    <p>Lab Number: ${selectedReport.labNumber}</p>
-                    <p>Date: ${new Date(selectedReport.timestamp).toLocaleString()}</p>
-                    <h2>Details</h2>
-                    <ul>
-                        <li>Test Type: ${selectedReport.patientId}</li>
-                        <li>Lab Remarks: ${selectedReport.labRemarks}</li>
-                        <li>Urine Test: ${selectedReport.urineTest}</li>
-                        <li>Blood Test: ${selectedReport.bloodTest}</li>
-                        <li>General Examination: ${selectedReport.generalExamination}</li>
-                        <li>Systemic Examination: ${selectedReport.systemicExamination}</li>
-                        <li>Other Tests: ${selectedReport.otherTests}</li>
-                        <li>Radiology Data: ${selectedReport.radiologyData}</li>
-                        <li>Clinical Notes: ${selectedReport.clinicalNotes}</li>
-                        <li>Clinical Officer Name: ${selectedReport.clinicalOfficerName}</li>
-                        <li>History of Past Illness: ${selectedReport.historyOfPastIllness}</li>
-                        <li>Allergy: ${selectedReport.allergy}</li>
-                    </ul>
+                    <div class="report-container">
+                        <div class="header">
+                            <h1 class="report-title">Full Clinical Report</h1>
+                            <div>
+<img 
+  src="data:image/jpeg;base64,${selectedReport.selectedReport.patientImage}" 
+  alt="img" 
+  style="width: 100px; height: 100px;">
+
+                            </div>
+                            <p>Date: ${new Date(selectedReport.selectedReport.timeStamp).toLocaleString()}</p>
+                            <p>Lab Number: ${formatData(selectedReport.selectedReport.labNumber)}</p>
+                        </div>
+    
+                        <div class="section">
+                            <h2 class="section-title">Patient Information</h2>
+                            <div class="section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">Patient Name:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.patientName)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Height:</span>
+                                        <span class="value">${formatData(selectedReport.height)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Weight:</span>
+                                        <span class="value">${formatData(selectedReport.weight)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Clinical Officer:</span>
+                                        <span class="value">${formatData(selectedReport.clinicalOfficerName)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="section">
+                            <h2 class="section-title">Clinical Information</h2>
+                            <div class="section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">Clinical Notes:</span>
+                                        <span class="value">${formatData(selectedReport.clinicalNotes)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">History of Past Illness:</span>
+                                        <span class="value">${formatData(selectedReport.historyOfPastIllness)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Allergy:</span>
+                                        <span class="value">${formatData(selectedReport.allergy)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="section">
+                            <h2 class="section-title">General Examination</h2>
+                            <div class="section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">Left Eye:</span>
+                                        <span class="value">${formatData(selectedReport.generalExamination?.leftEye)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Right Eye:</span>
+                                        <span class="value">${formatData(selectedReport.generalExamination?.rightEye)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Hernia:</span>
+                                        <span class="value">${formatData(selectedReport.generalExamination?.hernia)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Varicose Vein:</span>
+                                        <span class="value">${formatData(selectedReport.generalExamination?.varicoseVein)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="section">
+                            <h2 class="section-title">Systemic Examination</h2>
+                            <div class="section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">Blood Pressure:</span>
+                                        <span class="value">${formatData(selectedReport.systemicExamination?.bloodPressure)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Heart:</span>
+                                        <span class="value">${formatData(selectedReport.systemicExamination?.heart)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Pulse Rate:</span>
+                                        <span class="value">${formatData(selectedReport.systemicExamination?.pulseRate)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="section">
+                            <h2 class="section-title">Laboratory Tests</h2>
+                            <div class="section-content">
+                                <h3 class="subsection-title">Area 1 Tests</h3>
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">Blood Group:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.area1?.bloodGroup)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Pregnancy Test:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.area1?.pregnancyTest)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">VDRL Test:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.area1?.vdrlTest)}</span>
+                                    </div>
+                                </div>
+    
+                                <h3 class="subsection-title">Blood Tests</h3>
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">ESR:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.bloodTest?.esr)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">HBsAg:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.bloodTest?.hbsAg)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">HCV:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.bloodTest?.hcv)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">HIV Test:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.bloodTest?.hivTest)}</span>
+                                    </div>
+                                </div>
+    
+                                <h3 class="subsection-title">Full Haemogram</h3>
+                                <div class="test-header test-result">
+                                    <span>Parameter</span>
+                                    <span>Value</span>
+                                    <span>Status</span>
+                                    <span>Range</span>
+                                </div>
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.wbc)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.rbc)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.hgb)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.hct)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.mcv)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.mch)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.mchc)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.plt)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.lym)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.mid)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.gran)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.mpv)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.pdw)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.pct)}
+                                ${renderTestResult(selectedReport.selectedReport.fullHaemogram?.plcr)}
+                            </div>
+                        </div>
+    
+                        <div class="section">
+                            <h2 class="section-title">Urine Test</h2>
+                            <div class="section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">Albumin:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.urineTest?.albumin)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Sugar:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.urineTest?.sugar)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Reaction:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.urineTest?.reaction)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Microscopic:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.urineTest?.microscopic)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="section">
+                            <h2 class="section-title">Lab Remarks</h2>
+                            <div class="section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="label">Fitness Evaluation - Overall Status:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.labRemarks?.fitnessEvaluation?.overallStatus)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Other Aspects Fit:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.labRemarks?.fitnessEvaluation?.otherAspectsFit)}</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="label">Lab Superintendent:</span>
+                                        <span class="value">${formatData(selectedReport.selectedReport.labRemarks?.labSuperintendent?.name)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="footer">
+                            <p>This is a computer-generated report. No signature required.</p>
+                            <p>Report generated on: ${new Date().toLocaleString()}</p>
+                        </div>
+                    </div>
                 </body>
             </html>
         `;
+
         const printWindow = window.open("", "", "width=800,height=600");
         printWindow.document.write(printContent);
         printWindow.document.close();
-        printWindow.print();
+        printWindow.onload = () => {
+            printWindow.print();
+            printWindow.onafterprint = () => {
+                printWindow.close();
+            };
+        };
     };
 
 
@@ -280,6 +616,7 @@ const Agent = () => {
                                                 <FaPrint className="mr-2" />
                                                 Print
                                             </button>
+                                           {/*
                                             <button
                                                 onClick={exportToExcel}
                                                 className="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-all duration-200"
@@ -287,6 +624,7 @@ const Agent = () => {
                                                 <FaFileExport className="mr-2" />
                                                 Export to Excel
                                             </button>
+                                            */}
                                         </div>
 
                                         {/* Patient Information */}

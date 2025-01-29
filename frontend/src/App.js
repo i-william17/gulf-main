@@ -24,6 +24,7 @@ import AllUsers from "./pages/Admin/AllUsers.jsx";
 import Clinical from "./pages/Clinical/Clinical.jsx";
 import Radiology from "./pages/Radiology/Radiology.jsx";
 import Agent from "./pages/Agent/Agent.jsx";
+import AdminAuth from "./pages/Admin/AdminAuth.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 
 const App = () => {
@@ -46,6 +47,7 @@ const App = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/all-patients" element={<AllPatients />} />
               <Route path="/user-account" element={<UserAccount />} />
+              <Route path="/admin-auth" element={<AdminAuth />} />
               <Route
                 path="/financial-statements"
                 element={<FinancialStatements />}

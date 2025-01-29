@@ -386,7 +386,6 @@ const Accounts = () => {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Due</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -407,7 +406,7 @@ const Accounts = () => {
                                       {record.paymentStatus}
                                     </span>
                                   </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.paymentDate}</td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(record.paymentDate).toLocaleString()}</td>
                                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                     <button
                                       onClick={() => handleUpdate(record)}

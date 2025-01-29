@@ -100,13 +100,13 @@ const Navbar = () => {
                   <Microscope className="w-4 h-4" />
                   <span>Laboratory</span>
                 </Link>
-                <Link to="/clinical" className="flex items-center gap-2 px-4 py-2 hover:bg-teal-700/80 transition duration-300">
-                  <Stethoscope className="w-4 h-4" />
-                  <span>Clinical</span>
-                </Link>
                 <Link to="/radiology" className="flex items-center gap-2 px-4 py-2 hover:bg-teal-700/80 transition duration-300">
                   <Radio className="w-4 h-4" />
                   <span>Radiology</span>
+                </Link>
+                <Link to="/clinical" className="flex items-center gap-2 px-4 py-2 hover:bg-teal-700/80 transition duration-300">
+                  <Stethoscope className="w-4 h-4" />
+                  <span>Clinical</span>
                 </Link>
                 <Link to="/agent" className="flex items-center gap-2 px-4 py-2 hover:bg-teal-700/80 transition duration-300 rounded-b-xl">
                   <Users className="w-4 h-4" />
@@ -126,7 +126,7 @@ const Navbar = () => {
           </Link>
 
           <Link
-            to="/admin"
+            to="/admin-auth"
             className="text-white flex items-center gap-2 hover:text-gray-200 relative group transition-all duration-300"
           >
             <UserCog className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
@@ -227,7 +227,7 @@ const Navbar = () => {
             </Link>
 
             <Link
-              to="/admin"
+              to="/admin-auth"
               className="text-white text-xl flex items-center gap-3 hover:bg-teal-700/80 px-6 py-3 rounded-xl w-full justify-center transition duration-300"
               onClick={() => setIsOpen(false)}
             >
