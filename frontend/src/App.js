@@ -6,7 +6,6 @@ import {
   Routes,
   BrowserRouter,
 } from "react-router-dom";
-import Signup from "./pages/FrontOffice/Signup.jsx";
 import Login from "./pages/FrontOffice/Login.jsx";
 import FrontOffice from "./pages/FrontOffice/FrontOffice.jsx";
 import Accounts from "./pages/Accounts/Accounts.jsx";
@@ -35,7 +34,6 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
               <Route path="/front-office" element={<FrontOffice />} />
               <Route path="/accounts" element={<Accounts />} />
               <Route path="/accounts-login" element={<AccountsLogin />} />

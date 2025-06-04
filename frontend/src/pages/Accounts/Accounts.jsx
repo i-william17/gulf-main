@@ -58,6 +58,7 @@ const Accounts = () => {
     }
   }, [currentRecord]);
 
+
   const handlePaymentSubmit = async () => {
     if (!selectedPatient || !modeOfPayment || !accountNumber || !amountPaid || !commission || !xrayPayment || !amountDue) {
       toast.error('Please enter all required fields.');
@@ -226,10 +227,13 @@ const Accounts = () => {
                         value={modeOfPayment}
                         onChange={(e) => setModeOfPayment(e.target.value)}
                       >
-                        <option value="cash">Cash</option>
-                        <option value="paybill">Paybill</option>
-                        <option value="invoice">Invoice</option>
+                        <option value="">-- Select Mode of Payment --</option> 
+                        <option value="Cash">Cash</option>
+                        <option value="Mpesa">Mpesa</option>
+                        <option value="Paybill">Paybill</option>
+                        <option value="Invoice">Invoice</option>
                       </select>
+
                     </div>
 
                     <div>
@@ -400,8 +404,8 @@ const Accounts = () => {
                                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.amountDue}</td>
                                   <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${record.paymentStatus === 'Paid'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-yellow-100 text-yellow-800'
+                                      ? 'bg-green-100 text-green-800'
+                                      : 'bg-yellow-100 text-yellow-800'
                                       }`}>
                                       {record.paymentStatus}
                                     </span>

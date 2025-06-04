@@ -131,7 +131,7 @@ const Phlebotomy = () => {
                         <span className="ml-2 font-mono">{labNumber}</span>
                       </p>
                       <div className="bg-white p-4 rounded-lg">
-                        <BarcodeComponent value={`${selectedPatientData._id}-${labNumber}`} />
+                        <BarcodeComponent value={`${labNumber}`} />
                       </div>
                     </div>
                   )}
@@ -166,7 +166,7 @@ const Phlebotomy = () => {
                 )}
               </div>
             </div>
-            {labNumber && <BarcodeComponent value={`${selectedPatientData._id}-${labNumber}`} />}
+            {labNumber && <BarcodeComponent value={`${labNumber}`} />}
           </div>
         </div>
       );

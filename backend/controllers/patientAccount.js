@@ -13,7 +13,8 @@ exports.getPaymentRecords = async (req, res) => {
 
 // Create new payment
 exports.createPayment = async (req, res) => {
-    const { patientName, accountNumber, amountDue, amountPaid, paymentStatus } = req.body;
+    const { patientName, modeOfPayment, accountNumber, amountDue, commission, xrayPayment, amountPaid, paymentStatus } = req.body;
+
 
     // Validate required fields
     if (!patientName || !accountNumber || amountDue == null || amountPaid == null || !paymentStatus) {
@@ -23,6 +24,9 @@ exports.createPayment = async (req, res) => {
     const newPayment = new accounts({
         patientName,
         accountNumber,
+        modeOfPayment,
+        commission,
+        xrayPayment,
         amountDue,
         amountPaid,
         paymentStatus
@@ -42,7 +46,7 @@ exports.createPayment = async (req, res) => {
 
 // Update existing payment record
 exports.updatePayment = async (req, res) => {
-    const { patientName, accountNumber, amountDue, amountPaid, paymentStatus } = req.body;
+    const { patientName, modeOfPayment, accountNumber, amountDue, commission, xrayPayment, amountPaid, paymentStatus  } = req.body;
 
     // Validate required fields
     if (!patientName || !accountNumber || amountDue == null || amountPaid == null || !paymentStatus) {
