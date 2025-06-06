@@ -12,7 +12,6 @@ import Select from 'react-select';
 import { Country, State, City } from 'country-state-city';
 import axios from 'axios';
 import TopBar from '../../components/TopBar'
-import LeftBar from '../../components/LeftBar'
 import Footer from '../../components/Footer';
 import { QRCodeCanvas } from 'qrcode.react';
 import logo from '../../assets/GULF HEALTHCARE KENYA LTD.png';
@@ -394,7 +393,6 @@ const FrontOffice = () => {
     <div className="min-h-screen bg-gray-100">
       <TopBar />
       <div className="flex">
-        <LeftBar />
         
         <div className="flex-1 px-6 py-8">
           <Container maxWidth="lg" className="bg-white rounded-xl shadow-lg">

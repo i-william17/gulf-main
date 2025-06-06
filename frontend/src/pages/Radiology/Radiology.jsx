@@ -126,7 +126,7 @@ const Radiology = () => {
                     <div className="bg-white dark:bg-gray-200 rounded-lg shadow-lg p-4 overflow-y-auto">
                         <input
                             type="text"
-                            placeholder="Search by patient name or lab number"
+                            placeholder="Search by lab number"
                             className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}

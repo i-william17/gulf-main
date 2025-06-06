@@ -46,28 +46,30 @@ exports.createPayment = async (req, res) => {
 
 // Update existing payment record
 exports.updatePayment = async (req, res) => {
-    const { patientName, modeOfPayment, accountNumber, amountDue, commission, xrayPayment, amountPaid, paymentStatus  } = req.body;
+    const { patientName, modeOfPayment, accountNumber, amountDue, commission, xrayPayment, amountPaid, paymentStatus } = req.body;
 
-    // Validate required fields
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: 'Invalid ID format' });
+    }
+
     if (!patientName || !accountNumber || amountDue == null || amountPaid == null || !paymentStatus) {
-        return res.status(400).json({ message: 'All fields are required' });
+        return res.status(400).json({ message: 'All required fields must be provided' });
     }
 
     try {
-        // Find the payment record by ID and update it
         const updatedPayment = await accounts.findByIdAndUpdate(
             req.params.id,
-            { patientName, accountNumber, amountDue, amountPaid, paymentStatus },
-            { new: true, runValidators: true } // Returns the updated document, runs validation
+            { patientName, modeOfPayment, accountNumber, amountDue, amountPaid, commission, xrayPayment, paymentStatus },
+            { new: true, runValidators: true }
         );
 
         if (!updatedPayment) {
             return res.status(404).json({ message: 'Payment record not found' });
         }
 
-        res.status(200).json(updatedPayment); // Return the updated payment record
+        res.status(200).json(updatedPayment);
     } catch (error) {
-        // Handle potential validation errors or other issues
+        console.error('Error in updatePayment:', error);
         res.status(400).json({ message: error.message });
     }
 };

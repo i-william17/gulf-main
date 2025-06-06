@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaChevronCircleLeft, FaPrint, FaChevronCircleRight, FaFileExport } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import ReportSection from "../Admin/ReportSection";
 import "react-toastify/dist/ReactToastify.css";
@@ -45,10 +45,10 @@ const Agent = () => {
         // Filter by search term
         if (searchTerm) {
             filtered = filtered.filter((report) =>
-                (report.patientName &&
-                    report.patientName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (report.labNumber &&
-                    report.labNumber.toString().includes(searchTerm.toLowerCase()))
+                (report?.selectedReport?.repatientName &&
+                    report?.selectedReport?.patientName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (report?.selectedReport?.labNumber &&
+                    report?.selectedReport?.labNumber?.toString().includes(searchTerm.toLowerCase()))
             );
         }
 
@@ -701,7 +701,6 @@ const Agent = () => {
 
                 </div>
             </div>
-            <ToastContainer />
         </>
     );
 };

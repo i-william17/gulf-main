@@ -30,7 +30,7 @@ patientRoutes.delete('/:id', patientController.deletePatient);
 //Patient Account Routes
 patientRoutes.get('/account/:id', patientAccount.getPaymentRecords);
 patientRoutes.post('/account', patientAccount.createPayment);
-patientRoutes.put('/account/:id', patientAccount.updatePayment);
-patientRoutes.delete('/account/:id', patientAccount.deletePayment);
+patientRoutes.put('/account/id', patientAccount.updatePayment);
+patientRoutes.delete('/:id', patientAccount.deletePayment);
 
 module.exports = patientRoutes;

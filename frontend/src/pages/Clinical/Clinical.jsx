@@ -296,12 +296,13 @@ const Clinical = () => {
                     <h1 className="text-2xl font-bold">Clinical Reports</h1>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-1 px-2 py-1">
+
                     {/* Sidebar */}
                     <div className="bg-white dark:bg-gray-200 rounded-lg shadow-lg p-4 overflow-y-auto">
                         <input
                             type="text"
-                            placeholder="Search by patient name or lab number"
+                            placeholder="Search by lab number"
                             className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -314,63 +315,37 @@ const Clinical = () => {
                                 <div
                                     key={report._id}
                                     onClick={() => setSelectedReport(report)}
-                                    className={`
-        relative
-        p-6
-        rounded-xl
-        mb-4
-        transition-all
-        duration-300
-        ease-in-out
-        hover:scale-105
-        border
-        shadow-lg
-        hover:shadow-xl
-        ${selectedReport?._id === report._id
+                                    className={`relative p-4 rounded-lg mb-4 transition-all duration-300 ease-in-out hover:scale-105 border shadow-md hover:shadow-lg
+          ${selectedReport?._id === report._id
                                             ? "bg-gradient-to-br from-teal-600 to-teal-700 text-white border-teal-400"
                                             : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-teal-50 dark:hover:bg-teal-900"
                                         }`}
                                 >
-                                    <div className="flex flex-col items-center space-y-4">
+                                    <div className="flex flex-col items-center space-y-3">
                                         <div className="relative group">
                                             <div className="absolute inset-0 bg-teal-400 rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-                                            <div className="w-32 h-32 border-4 border-gray-200 dark:border-gray-600 rounded-full overflow-hidden bg-gray-50 dark:bg-gray-700 shadow-inner">
+                                            <div className="w-24 h-24 border-2 border-gray-200 dark:border-gray-600 rounded-full overflow-hidden bg-gray-50 dark:bg-gray-700 shadow-inner">
                                                 {report.patientImage ? (
-                                                    <>
-                                                        <img
-                                                            src={`data:image/jpeg;base64,${report.patientImage}`}
-                                                            alt="Patient"
-                                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                                        />
-                                                    </>
+                                                    <img
+                                                        src={`data:image/jpeg;base64,${report.patientImage}`}
+                                                        alt="Patient"
+                                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                                    />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center">
-                                                        <span className="text-gray-400 dark:text-gray-500 text-3xl font-light">-</span>
+                                                        <span className="text-gray-400 dark:text-gray-500 text-2xl font-light">-</span>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
 
-                                        <div className="w-full space-y-2 text-center">
-                                            <h3 className={`text-lg font-semibold tracking-wide ${selectedReport?._id === report._id
-                                                ? "text-white"
-                                                : "text-gray-800 dark:text-gray-200"
-                                                }`}>
+                                        <div className="w-full space-y-1 text-center">
+                                            <h3 className={`text-base font-semibold ${selectedReport?._id === report._id ? "text-white" : "text-gray-800 dark:text-gray-200"}`}>
                                                 Name: {report.patientName}
                                             </h3>
-
-                                            <div className={`text-sm space-y-1 ${selectedReport?._id === report._id
-                                                ? "text-teal-100"
-                                                : "text-gray-600 dark:text-gray-400"
-                                                }`}>
-                                                <p className="flex items-center justify-center space-x-2">
-                                                    <span className="font-medium">Lab Number: </span>
-                                                    <span>{report.labNumber}</span>
-                                                </p>
-                                                <p className="flex items-center justify-center space-x-2">
-                                                    <span className="font-medium">Date: </span>
-                                                    <span>{new Date(report.timeStamp).toLocaleString()}</span>
-                                                </p>
+                                            <div className={`text-xs ${selectedReport?._id === report._id ? "text-teal-100" : "text-gray-600 dark:text-gray-400"}`}>
+                                                <p>Lab Number: {report.labNumber}</p>
+                                                <p>Date: {new Date(report.timeStamp).toLocaleString()}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -385,36 +360,36 @@ const Clinical = () => {
                             <button
                                 disabled={currentPage === 1}
                                 onClick={() => setCurrentPage((prev) => prev - 1)}
-                                className={`px-4 py-2 bg-blue-500 text-white rounded-lg transition-opacity ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
-                                    }`}
+                                className={`px-3 py-1.5 bg-blue-500 text-white rounded-lg transition-opacity ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"}`}
                             >
                                 <FaChevronCircleLeft className="size-5" />
                             </button>
-                            <span>
-                                Page {currentPage} of{" "}
-                                {Math.ceil(filteredReports.length / itemsPerPage)}
+                            <span className="text-sm">
+                                Page {currentPage} of {Math.ceil(filteredReports.length / itemsPerPage)}
                             </span>
                             <button
                                 disabled={currentPage === Math.ceil(filteredReports.length / itemsPerPage)}
                                 onClick={() => setCurrentPage((prev) => prev + 1)}
-                                className={`px-4 py-2 bg-blue-500 text-white rounded-lg transition-opacity ${currentPage === Math.ceil(filteredReports.length / itemsPerPage)
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "hover:bg-blue-600"
-                                    }`}
+                                className={`px-3 py-1.5 bg-blue-500 text-white rounded-lg transition-opacity ${currentPage === Math.ceil(filteredReports.length / itemsPerPage) ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"}`}
                             >
                                 <FaChevronCircleRight className="size-5" />
                             </button>
                         </div>
                     </div>
 
-                    {/* Detailed View */}
-                    <div className="col-span-2 bg-white dark:bg-gray-200 rounded-lg shadow-lg p-6">
+                    {/* Detailed Report View */}
+                    <div className="col-span-3 bg-white dark:bg-gray-100 rounded-2xl shadow-2xl p-8">
                         {selectedReport ? (
-                            <>
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-xl font-bold">{selectedReport.patientName}'s Report</h2>
+                            <div>
+                                {/* Report Header */}
+                                <div className="flex justify-between items-center border-b border-gray-200 pb-6">
+                                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-900">
+                                        {selectedReport.patientName}'s Report
+                                    </h2>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                                {/* Test Results Grid */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     <ReportSection title="Laboratory Remarks" data={selectedReport.labRemarks} />
                                     <ReportSection title="Urine Test" data={selectedReport.urineTest} />
                                     <ReportSection title="Blood Test" data={selectedReport.bloodTest} />
@@ -424,79 +399,104 @@ const Clinical = () => {
                                     <ReportSection title="Liver Function" data={selectedReport.liverFunction} />
                                     <ReportSection title="Radiology Data" data={selectedReport.radiologyData} />
                                 </div>
-                                <div className="mt-4">
-                                    <h2 className="text-xl font-bold mb-4">Clinical Notes</h2>
 
-                                    {/* Basic Information */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                        <input
-                                            type="number"
-                                            placeholder="Height (cm)"
-                                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={formData.height}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="Weight (kg)"
-                                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={formData.weight}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
-                                        />
+                                {/* Clinical Information Section */}
+                                <div className="space-y-8">
+                                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-900 border-b border-gray-200 pb-4">
+                                        Clinical Information
+                                    </h2>
+
+                                    {/* Vital Measurements */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-600">Height (cm)</label>
+                                            <input
+                                                type="number"
+                                                className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.height}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-600">Weight (kg)</label>
+                                            <input
+                                                type="number"
+                                                className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.weight}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                                            />
+                                        </div>
                                     </div>
 
-                                    <div className="mb-6">
-                                        <input
-                                            type="text"
-                                            placeholder="History of Past Illness"
-                                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-                                            value={formData.historyOfPastIllness}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, historyOfPastIllness: e.target.value }))}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Allergy"
-                                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={formData.allergy}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, allergy: e.target.value }))}
-                                        />
+                                    {/* Medical History */}
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-600">History of Past Illness</label>
+                                            <input
+                                                type="text"
+                                                className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.historyOfPastIllness}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, historyOfPastIllness: e.target.value }))}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-gray-600">Allergies</label>
+                                            <input
+                                                type="text"
+                                                className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={formData.allergy}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, allergy: e.target.value }))}
+                                            />
+                                        </div>
                                     </div>
 
                                     {/* Examination Sections */}
-                                    {renderExaminationSection('generalExamination', 'General Examination')}
-                                    {renderExaminationSection('systemicExamination', 'Systemic Examination')}
-                                    {renderExaminationSection('otherTests', 'Other Tests')}
+                                    <div className="space-y-6">
+                                        {renderExaminationSection('generalExamination', 'General Examination')}
+                                        {renderExaminationSection('systemicExamination', 'Systemic Examination')}
+                                        {renderExaminationSection('otherTests', 'Other Tests')}
+                                    </div>
 
-                                    {/* Clinical Notes and Officer Name */}
-                                    <div className="mb-6">
+                                    {/* Clinical Notes */}
+                                    <div className="space-y-4">
+                                        <label className="text-sm font-medium text-gray-600">Clinical Notes</label>
                                         <textarea
-                                            placeholder="Clinical Notes"
-                                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                                            className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[120px]"
                                             value={formData.clinicalNotes}
                                             onChange={(e) => setFormData(prev => ({ ...prev, clinicalNotes: e.target.value }))}
                                         />
+                                    </div>
+
+                                    {/* Officer Information */}
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-600">Clinical Officer Name</label>
                                         <input
                                             type="text"
-                                            placeholder="Clinical Officer Name"
-                                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="border border-gray-300 rounded-lg px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             value={formData.clinicalOfficerName}
                                             onChange={(e) => setFormData(prev => ({ ...prev, clinicalOfficerName: e.target.value }))}
                                         />
                                     </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={handleSubmit}
-                                        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
-                                    >
-                                        Submit Report
-                                    </button>
+                                    {/* Submit Button */}
+                                    <div className="pt-4">
+                                        <button
+                                            type="button"
+                                            onClick={handleSubmit}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl text-base font-medium shadow-md transition w-full sm:w-auto"
+                                        >
+                                            Submit Report
+                                        </button>
+                                    </div>
                                 </div>
-                            </>
+                            </div>
                         ) : (
-                            <p className="text-center text-gray-500">Select a report to view details.</p>
+                            <div className="flex flex-col items-center justify-center h-full py-12">
+                                <p className="text-center text-gray-500 text-lg">Select a report to view details</p>
+                            </div>
                         )}
                     </div>
+
                 </div>
 
                 <ToastContainer />

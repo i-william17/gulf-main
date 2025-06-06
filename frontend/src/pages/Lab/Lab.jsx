@@ -194,7 +194,7 @@ const Lab = () => {
     <>
       <TopBar />
 
-      <div className='flex'>
+      <div className='flex '>
         <LeftBar />
 
         {patientData ? (
@@ -204,10 +204,8 @@ const Lab = () => {
               <Form className='max-w-11/12 mx-auto p-6 bg-white shadow-lg rounded-lg'>
 
                 <h1 className="text-2xl font-extrabold text-center mb-8 text-blue-700 transition duration-300 hover:text-blue-900 shadow-md p-4 rounded-md bg-gradient-to-r from-blue-50 to-blue-200 hover:from-blue-100 hover:to-blue-300">
-                  COMPREHENSIVE LABORATORY EXAMINATION REPORT
+                  COMPREHENSIVE LABORATORY EXAMINATION
                 </h1>
-
-                <ToastContainer />
 
                 <p className="text-lg text-gray-700 mb-4">
                   Patient Name: <span className="font-semibold">{selectedPatient || 'No data'}</span>
@@ -448,10 +446,6 @@ const Lab = () => {
                         {selectedTests.area1?.typhoid && (<Field name="area1.typhoid" type="text" />)}
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                        <label><input type="checkbox" checked={selectedTests.area1?.hydrocele || false} onChange={() => handleTestSelect('area1', 'hydrocele')} /> Hydrocele:</label>
-                        {selectedTests.area1?.hydrocele && (<Field name="area1.hydrocele" type="text" />)}
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                         <label><input type="checkbox" checked={selectedTests.area1?.otherDeformities || false} onChange={() => handleTestSelect('area1', 'otherDeformities')} /> Other Deformities:</label>
                         {selectedTests.area1?.otherDeformities && (<Field name="area1.otherDeformities" type="text" />)}
                       </div>
@@ -476,9 +470,29 @@ const Lab = () => {
                         {selectedTests.area1?.spleen && (<Field name="area1.spleen" type="text" />)}
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                        <label><input type="checkbox" checked={selectedTests.area1?.bloodGroup || false} onChange={() => handleTestSelect('area1', 'bloodGroup')} /> Blood Group:</label>
-                        {selectedTests.area1?.bloodGroup && (<Field name="area1.bloodGroup" type="text" />)}
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={selectedTests.area1?.bloodGroup || false}
+                            onChange={() => handleTestSelect('area1', 'bloodGroup')}
+                          /> Blood Group:
+                        </label>
+
+                        {selectedTests.area1?.bloodGroup && (
+                          <Field as="select" name="area1.bloodGroup" className="border rounded px-2 py-1">
+                            <option value="">Select</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A−</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B−</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB−</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O−</option>
+                          </Field>
+                        )}
                       </div>
+
                     </>
                   )}
                 </div>

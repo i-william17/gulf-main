@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+const express = require("express");
 const LabNumber = require("../models/LabNumber");
 
 // Controller to handle lab number submission
@@ -38,3 +40,23 @@ exports.getAllLabNumbers = async (req, res) => {
   }
 };
 
+exports.deleteLabNumber = async (req, res) => {
+    const { id } = req.params;
+
+    // Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+    }
+
+    try {
+        const deleted = await LabNumber.findByIdAndDelete(id);
+        if (!deleted) {
+            return res.status(404).json({ error: 'Lab number not found' });
+        }
+
+        res.json({ message: 'Lab number deleted successfully' });
+    } catch (err) {
+        console.error('DELETE error:', err);
+        res.status(500).json({ error: 'Server error while deleting' });
+    }
+};
